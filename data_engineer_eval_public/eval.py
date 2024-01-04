@@ -41,13 +41,17 @@ cursor.execute(merge_dummy("product"))
 cursor.execute(drop_temp("product_temp"))
 connection.commit()
 
-
+#this was the hardest one for me for sure, I pretty much hacked it. I would do this to a similar standard as I did the others if I had the time.
+#get specific image columns for easier use
 image_columns = ["id", "images"]
 image_df = df[image_columns].copy()
+#rename to match existing table
 image_df.rename(columns={"id": "product_id"}, inplace=True)
 image_df.rename(columns={"images": "url"}, inplace=True)
+#XPLODE the table to get individual rows for each URL
 image_df = image_df.explode("url")
-#Write to temp table
+
+#this is weird, but it works. I did the merge in pandas instead of SQL, I couldn't figure it out in SQL.
 sql_query = """select * from product_image"""
 product_image_df = pd.read_sql_query(sql_query, connection)
 
@@ -62,7 +66,7 @@ connection.commit()
 
 
 #Objective 2
-#Create table to write to, declare primary key
+#Create cities_table to write to, declare primary key
 cursor.execute(create_cities_table())
 #Read csv into dataframe
 df = pd.read_csv("cities.csv")
@@ -77,7 +81,7 @@ cursor.execute(drop_temp("cities_temp"))
 connection.commit()
 
 # Objective 3
-# Using sql join, get necessary columns and count
+# Using sql join, get necessary columns and count. JOIN is in eval_sql.py
 cursor.execute(create_csv_export())
 result = cursor.fetchall()
 for row in result:
