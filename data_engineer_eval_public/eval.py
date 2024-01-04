@@ -54,9 +54,7 @@ image_df = image_df.explode("url")
 #this is weird, but it works. I did the merge in pandas instead of SQL, I couldn't figure it out in SQL.
 sql_query = """select * from product_image"""
 product_image_df = pd.read_sql_query(sql_query, connection)
-
 merged_df = pd.merge(product_image_df, image_df, on="url", how="left")
-
 merged_df.to_sql("product_image_temp", connection, if_exists="replace", index=False)
 
 #Merge temp table with existing table
